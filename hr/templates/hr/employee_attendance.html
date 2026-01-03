@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Attendance - HR Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-header h2 {
+            color: #333;
+            margin: 0 0 1rem 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .attendance-table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-present {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .status-absent {
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .status-late {
+            color: #ffc107;
+            font-weight: 500;
+        }
+
+        .status-half_day {
+            color: #fd7e14;
+            font-weight: 500;
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>HR Management System</h1>
+        <div class="user-info">
+            <span>Welcome, {{ user.get_full_name|default:user.username }}</span>
+            <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>📊 My Attendance Records</h2>
+            <p>View your attendance history and statistics</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ present_days }}</span>
+                <span class="stat-label">Present Days</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ attendance_rate }}%</span>
+                <span class="stat-label">Attendance Rate</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ total_days }}</span>
+                <span class="stat-label">Total Recorded Days</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ attendance_records|length }}</span>
+                <span class="stat-label">Records This Month</span>
+            </div>
+        </div>
+
+        <div class="attendance-table">
+            <div class="table-header">Recent Attendance Records</div>
+            {% if attendance_records %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Status</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                        <th>Working Hours</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ record.date|date:"M d, Y" }}</td>
+                        <td>{{ record.date|date:"l" }}</td>
+                        <td>
+                            <span class="status-{{ record.status }}">
+                                {{ record.status|title }}
+                            </span>
+                        </td>
+                        <td>{{ record.check_in_time|default:"-" }}</td>
+                        <td>{{ record.check_out_time|default:"-" }}</td>
+                        <td>{{ record.working_hours|default:"-" }} hrs</td>
+                        <td>{{ record.notes|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-records">
+                <h3>No Attendance Records Found</h3>
+                <p>Your attendance records will appear here once they are recorded.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

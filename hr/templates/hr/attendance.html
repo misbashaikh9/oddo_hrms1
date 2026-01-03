@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Records - HR Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #28a745;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            color: #333;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .attendance-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .employee-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .employee-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .employee-id {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .attendance-body {
+            padding: 1.5rem;
+        }
+
+        .attendance-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .attendance-calendar {
+            margin-top: 1rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .total-recorded {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .calendar-day.present {
+            background: #28a745;
+            color: white;
+        }
+
+        .calendar-day.absent {
+            background: #dc3545;
+            color: white;
+        }
+
+        .calendar-day.late {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .calendar-day.half_day {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .calendar-day.no-data {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #007bff;
+            position: relative;
+        }
+
+        .calendar-day.today::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px solid #007bff;
+            border-radius: 3px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .no-attendance {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>HR Management System</h1>
+        <div class="user-info">
+            <span>Welcome, {{ user.get_full_name|default:user.username }}</span>
+            <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h2>📊 Attendance Records</h2>
+            <p>Monitor employee attendance and work hours</p>
+        </div>
+
+        {% if employee_stats %}
+        <div class="attendance-grid">
+            {% for stat in employee_stats %}
+            <div class="attendance-card">
+                <div class="employee-header">
+                    <h3 class="employee-name">{{ stat.employee.user.get_full_name|default:stat.employee.user.username }}</h3>
+                    <p class="employee-id">{{ stat.employee.employee_id }}</p>
+                </div>
+                <div class="attendance-body">
+                    <div class="attendance-stats">
+                        <div class="stat-box">
+                            <span class="stat-number">{{ stat.present_days }}</span>
+                            <span class="stat-label">Present Days</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-number">{{ stat.attendance_rate }}%</span>
+                            <span class="stat-label">Attendance Rate</span>
+                        </div>
+                    </div>
+
+                    <div class="attendance-calendar">
+                        <div class="calendar-header">
+                            <h4>Recent Attendance</h4>
+                            <span class="total-recorded">Total: {{ stat.total_days }} days</span>
+                        </div>
+                        <div class="calendar-grid">
+                            {% if stat.recent_attendance %}
+                                {% for attendance in stat.recent_attendance %}
+                                <div class="calendar-day {{ attendance.status }}
+                                    {% if attendance.date == today %} today{% endif %}">
+                                    {{ attendance.date|date:"d" }}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="no-attendance">
+                                    No attendance records found
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <a href="#" class="btn btn-primary">View Full History</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-data">
+            <h3>No Employees Found</h3>
+            <p>No employee attendance data available.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

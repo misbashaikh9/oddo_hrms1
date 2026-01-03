@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - System</title>
+    <style>
+        /* Base theme variables */
+        :root {
+            {% if user.role == 'hr' or user.is_staff %}
+            --primary-color: #28a745;
+            --primary-hover: #218838;
+            --accent-color: #20c997;
+            --border-color: #28a745;
+            --background-gradient: linear-gradient(135deg, #f8fff8 0%, #e8f8e8 100%);
+            {% else %}
+            --primary-color: #667eea;
+            --primary-hover: #5a6fd8;
+            --accent-color: #764ba2;
+            --border-color: #667eea;
+            --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            {% endif %}
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: var(--background-gradient);
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .welcome-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .card h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+        .role-badge {
+            background: #28a745;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+
+
+        .logout-btn-card {
+            background: #dc3545 !important;
+        }
+
+        .logout-btn-card:hover {
+            background: #c82333 !important;
+        }
+
+        /* Employee Selector Styles */
+        .employee-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background: white;
+            margin-top: 0.5rem;
+        }
+
+        .employee-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Profile and Attendance Preview Styles */
+        .profile-preview, .attendance-preview {
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .profile-detail, .stat-mini {
+            margin-bottom: 0.25rem;
+            color: #666;
+        }
+
+        .stat-mini {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+    <script>
+
+        function showAttendance() {
+            const attendance = `
+Current Month Attendance:
+- Present Days: 22/23 working days
+- Attendance Rate: 96%
+- Late Days: 1
+- Absent Days: 0
+
+This Week (Jan 1-5):
+- Monday: Present (9:00 AM - 5:30 PM)
+- Tuesday: Present (8:45 AM - 5:15 PM)
+- Wednesday: Present (9:15 AM - 5:45 PM)
+- Thursday: Late (10:30 AM - 6:00 PM)
+- Friday: Present (8:30 AM - 5:00 PM)
+            `;
+            alert("Attendance Records:\\n\\n" + attendance.trim());
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Dashboard</h1>
+        <div class="user-info">
+            <span>Welcome, {{ user.get_full_name|default:user.username }}</span>
+            <span class="role-badge">{{ user.get_role_display }}</span>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-card">
+            <h2>{% if user.role == 'hr' or user.is_staff %}HR Dashboard{% else %}Employee Dashboard{% endif %}</h2>
+            {% if user.role == 'hr' or user.is_staff %}
+            <p>Manage employee records, attendance, and leave approvals.</p>
+            {% else %}
+            <p>Access your employee information and manage your work-related activities.</p>
+            {% endif %}
+        </div>
+
+        <div class="dashboard-grid">
+            {% if user.role == 'hr' or user.is_staff %}
+            <div class="card">
+                <h3>👥 Employee List</h3>
+                <p>View and manage all employees</p>
+                <a href="{% url 'employee_list' %}" class="btn">View Employees</a>
+            </div>
+
+            <div class="card">
+                <h3>📊 Attendance Records</h3>
+                <p>Monitor employee attendance</p>
+                <a href="{% url 'attendance_records' %}" class="btn">View Attendance</a>
+            </div>
+
+            <div class="card">
+                <h3>📋 Leave Approvals</h3>
+                <p>Review and approve leave requests</p>
+                <a href="{% url 'leave_requests' %}" class="btn">Manage Leaves</a>
+            </div>
+
+            <div class="card">
+                <h3>🔄 Employee Switcher</h3>
+                <p>Switch between employee views</p>
+                <form method="get" action="{% url 'employee_detail' 0 %}">
+                    <select name="employee_id" class="employee-select" onchange="this.form.submit()">
+                        <option value="">Select Employee...</option>
+                        {% for employee in recent_employees %}
+                        <option value="{{ employee.id }}">{{ employee.user.get_full_name }} ({{ employee.position }})</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            {% else %}
+            <div class="card">
+                <h3>👤 Profile</h3>
+                <p>View and update your employee information</p>
+                {% if current_employee %}
+                <div class="profile-preview">
+                    <div class="profile-detail"><strong>ID:</strong> {{ current_employee.employee_id }}</div>
+                    <div class="profile-detail"><strong>Position:</strong> {{ current_employee.position }}</div>
+                    <div class="profile-detail"><strong>Department:</strong> {{ current_employee.department.name|default:"Not Assigned" }}</div>
+                </div>
+                {% else %}
+                <div class="profile-preview">
+                    <div class="profile-detail"><strong>Status:</strong> Profile not set up</div>
+                    <div class="profile-detail"><strong>Contact HR</strong> for assistance</div>
+                </div>
+                {% endif %}
+                <a href="{% url 'employee_profile' %}" class="btn">View Full Profile</a>
+            </div>
+
+            <div class="card">
+                <h3>📊 Attendance</h3>
+                <p>View your attendance records</p>
+                <div class="attendance-preview">
+                    <div class="stat-mini">Present: <strong>{{ attendance_present }} days</strong></div>
+                    <div class="stat-mini">Rate: <strong>{{ attendance_rate }}%</strong></div>
+                    <div class="stat-mini">Total Recorded: <strong>{{ attendance_total }} days</strong></div>
+                </div>
+                <a href="{% url 'mark_attendance' %}" class="btn">Mark Attendance</a>
+            </div>
+
+            <div class="card">
+                <h3>📅 Leave Requests</h3>
+                <p>Submit and track your leave requests</p>
+                <a href="{% url 'leave_requests' %}" class="btn">Submit/View Requests</a>
+            </div>
+
+            <div class="card">
+                <h3>🚪 Logout</h3>
+                <p>Sign out of your account</p>
+                <a href="{% url 'logout' %}" class="btn logout-btn-card">Logout</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Activity/Alerts Section -->
+        <div class="activity-section">
+            {% if user.role == 'hr' or user.is_staff %}
+            <h2>📢 Management Dashboard - Recent Activity</h2>
+            <div class="activity-list">
+                {% for leave in recent_leaves %}
+                <div class="activity-item">
+                    <div class="activity-icon">📋</div>
+                    <div class="activity-content">
+                        <h4>New Leave Request</h4>
+                        <p>{{ leave.employee.user.get_full_name }} requested {{ leave.leave_type|title }} leave</p>
+                        <small>{{ leave.created_at|date:"M d, Y H:i" }}</small>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="activity-item">
+                    <div class="activity-icon">📋</div>
+                    <div class="activity-content">
+                        <h4>No Recent Leave Requests</h4>
+                        <p>All leave requests have been processed.</p>
+                        <small>Updated recently</small>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% for employee in recent_employees %}
+                <div class="activity-item">
+                    <div class="activity-icon">👥</div>
+                    <div class="activity-content">
+                        <h4>Employee Active</h4>
+                        <p>{{ employee.user.get_full_name }} - {{ employee.position }}</p>
+                        <small>Hired {{ employee.hire_date|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="activity-item">
+                    <div class="activity-icon">🏢</div>
+                    <div class="activity-content">
+                        <h4>Department Overview</h4>
+                        <p>{{ departments_count }} departments active</p>
+                        <small>Current status</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <h2>📢 Recent Activity & Alerts</h2>
+            <div class="activity-list">
+                {% if recent_leaves %}
+                {% for leave in recent_leaves %}
+                <div class="activity-item">
+                    <div class="activity-icon">📋</div>
+                    <div class="activity-content">
+                        <h4>Leave Request Update</h4>
+                        <p>Your {{ leave.leave_type }} leave request is {{ leave.status }}.</p>
+                        <small>{{ leave.created_at|date:"M d, Y" }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="activity-item">
+                    <div class="activity-icon">📋</div>
+                    <div class="activity-content">
+                        <h4>Leave Balance</h4>
+                        <p>You have 15 days of annual leave remaining for this year.</p>
+                        <small>Updated recently</small>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if recent_attendance %}
+                <div class="activity-item">
+                    <div class="activity-icon">📊</div>
+                    <div class="activity-content">
+                        <h4>Recent Attendance</h4>
+                        <p>Last check-in: {{ recent_attendance.0.date|date:"M d, Y" }} ({{ recent_attendance.0.status }})</p>
+                        <small>Attendance rate: {{ attendance_rate }}%</small>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="activity-item">
+                    <div class="activity-icon">🔔</div>
+                    <div class="activity-content">
+                        <h4>System Notification</h4>
+                        <p>Welcome to the HR Management System! Your account is active.</p>
+                        <small>Account created</small>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">📋</div>
+                    <div class="activity-content">
+                        <h4>Policy Reminder</h4>
+                        <p>Please review the updated attendance and leave policies.</p>
+                        <small>Company policy</small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance - HR Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .attendance-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .employee-info {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .current-date {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .attendance-status {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .status-not-checked-in {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-checked-in {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-checked-out {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .time-display {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .time-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .time-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .time-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 150px;
+        }
+
+        .btn-check-in {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-check-in:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-check-out {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-check-out:hover:not(:disabled) {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .activity-title {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            width: 30px;
+            text-align: center;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .messages {
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid #c3e6cb;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning {
+            color: #856404;
+            background: #fff3cd;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid #ffeaa7;
+            margin-bottom: 0.5rem;
+        }
+
+        .error {
+            color: #721c24;
+            background: #f8d7da;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .time-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>HR Management System</h1>
+        <div class="user-info">
+            <span>Welcome, {{ user.get_full_name|default:user.username }}</span>
+            <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="attendance-card">
+            <div class="card-header">
+                <h2 class="welcome-message">📍 Mark Your Attendance</h2>
+                <p class="employee-info">Employee ID: {{ employee.employee_id }} | {{ employee.position }}</p>
+            </div>
+
+            <div class="card-body">
+                <div class="current-date">
+                    <strong>Today: {{ today|date:"l, F d, Y" }}</strong><br>
+                    <small>Current Time: {{ current_time|time:"H:i:s" }}</small>
+                </div>
+
+                <div class="attendance-status">
+                    {% if not attendance_status %}
+                        <div class="status-indicator status-not-checked-in">
+                            ⏰ Not Checked In Today
+                        </div>
+                    {% elif not check_out_time %}
+                        <div class="status-indicator status-checked-in">
+                            ✅ Checked In
+                        </div>
+                    {% else %}
+                        <div class="status-indicator status-checked-out">
+                            🏠 Checked Out for Today
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if attendance_status %}
+                <div class="time-display">
+                    <div class="time-row">
+                        <span class="time-label">Check-in Time:</span>
+                        <span class="time-value">{{ check_in_time|time:"H:i:s" }}</span>
+                    </div>
+                    {% if check_out_time %}
+                    <div class="time-row">
+                        <span class="time-label">Check-out Time:</span>
+                        <span class="time-value">{{ check_out_time|time:"H:i:s" }}</span>
+                    </div>
+                    {% if working_hours %}
+                    <div class="time-row">
+                        <span class="time-label">Working Hours:</span>
+                        <span class="time-value">{{ working_hours }} hours</span>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="action-buttons">
+                        {% if not attendance_status %}
+                            <button type="submit" name="action" value="check_in" class="btn btn-check-in">
+                                🏢 Check In
+                            </button>
+                        {% elif can_check_out %}
+                            <button type="submit" name="action" value="check_out" class="btn btn-check-out">
+                                🏠 Check Out
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-check-in" disabled>
+                                ✓ Attendance Complete
+                            </button>
+                        {% endif %}
+
+                        <a href="{% url 'employee_attendance' %}" class="btn" style="background: #6c757d; color: white; text-decoration: none;">
+                            📊 View History
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="recent-activity">
+            <h3 class="activity-title">📅 Recent Attendance Activity</h3>
+            {% if employee.attendance_set.exists %}
+                {% for attendance in employee.attendance_set.all|slice:":5" %}
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        {% if attendance.status == 'present' %}✅{% elif attendance.status == 'absent' %}❌{% else %}⏰{% endif %}
+                    </div>
+                    <div class="activity-content">
+                        <strong>{{ attendance.date|date:"l, M d" }}</strong> -
+                        {{ attendance.status|title }}
+                        {% if attendance.check_in_time %}
+                        ({{ attendance.check_in_time|time:"H:i" }}
+                        {% if attendance.check_out_time %}
+                        - {{ attendance.check_out_time|time:"H:i" }}
+                        {% endif %})
+                        {% endif %}
+                        <br>
+                        <span class="activity-date">{{ attendance.date|timesince }} ago</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="activity-item">
+                    <div class="activity-icon">📝</div>
+                    <div class="activity-content">
+                        <strong>No attendance records yet</strong><br>
+                        <span class="activity-date">Start by checking in today!</span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh current time every second
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            document.querySelector('.current-date small').textContent = 'Current Time: ' + timeString;
+        }
+
+        setInterval(updateTime, 1000);
+
+        // Add confirmation for check-out
+        document.querySelector('button[name="action"][value="check_out"]')?.addEventListener('click', function(e) {
+            if (!confirm('Are you sure you want to check out for today?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

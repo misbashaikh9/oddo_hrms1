@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem; /* Add padding to prevent touching edges */
+        }
+        .signup-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="email"], input[type="password"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            box-sizing: border-box; /* Ensure consistent sizing */
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #218838;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .messages {
+            margin-bottom: 1rem;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 0.5rem;
+        }
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        .password-requirements ul {
+            margin: 0.25rem 0;
+            padding-left: 1.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+            .signup-container {
+                padding: 1.5rem;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h1>Create Account</h1>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="error">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="emailid">Email ID:</label>
+                <input type="email" id="emailid" name="emailid" required placeholder="Enter your email address">
+            </div>
+
+            <div class="form-group">
+                <label for="employee_id">Employee ID:</label>
+                <input type="text" id="employee_id" name="employee_id" placeholder="Enter your employee ID (optional)">
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="">Select your role</option>
+                    <option value="employee">Employee</option>
+                    <option value="hr">HR</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required placeholder="Create a strong password">
+                <div class="password-requirements">
+                    Password must contain:
+                    <ul>
+                        <li>At least 8 characters</li>
+                        <li>At least one uppercase letter</li>
+                        <li>At least one lowercase letter</li>
+                        <li>At least one number</li>
+                        <li>At least one special character</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+            </div>
+
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+
+        <div class="login-link">
+            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>
